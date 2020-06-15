@@ -13,7 +13,7 @@ namespace TextBoxes
     /// <summary>
     /// A text box that allows stronger control of the rich text Box.
     /// </summary>
-    public partial class FancyTextBox: RichTextBox
+    public partial class VividTextBox: RichTextBox
     {
         private List<TextStyle> TextStyles { get; set; }
 
@@ -23,7 +23,7 @@ namespace TextBoxes
         /// </summary>
         private Dictionary<string,KeyValuePair<string,TextStyle>> Styles { get; set; }
 
-        public FancyTextBox()
+        public VividTextBox()
         {
             this.KeyPress += KeyPressEvent;
             this.KeyUp += KeyUpEvent;
@@ -111,12 +111,11 @@ namespace TextBoxes
             {
                 if (Text.Substring(0, len).EndsWith(str))
                 {
-                    // Style the text.
+                    // Style the text until the end string is reached
                     StyleSelection(textPos - len, textPos, Styles[str].Value);
                 }
             }
 
-            // Maintain the text formatting until the end string is reached.
         }
 
         private void KeyPressEvent(object sender, KeyPressEventArgs e)

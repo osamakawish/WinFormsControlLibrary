@@ -1,0 +1,5 @@
+C:\Users\osama\source\repos\WinFormsControlLibrary\TextBoxes\obj\Debug\TextBoxes.csprojAssemblyReference.cache
+C:\Users\osama\source\repos\WinFormsControlLibrary\TextBoxes\obj\Debug\TextBoxes.TagTextBox.resources
+C:\Users\osama\source\repos\WinFormsControlLibrary\TextBoxes\obj\Debug\TextBoxes.VividTextBox.resources
+C:\Users\osama\source\repos\WinFormsControlLibrary\TextBoxes\obj\Debug\TextBoxes.csproj.GenerateResource.cache
+C:\Users\osama\source\repos\WinFormsControlLibrary\TextBoxes\obj\Debug\TextBoxes.csproj.CoreCompileInputs.cache
