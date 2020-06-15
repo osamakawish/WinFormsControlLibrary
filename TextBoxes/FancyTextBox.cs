@@ -21,40 +21,34 @@ namespace TextBoxes
         /// The style of the text to be followed by the string in the key, ending with the string in TextStyle.EndsWith. 
         /// The Color and FontStyle of the text are changed to match the TextStyle.
         /// </summary>
-        private Dictionary<string,TextStyle> Styles { get; set; }
-
-        /// <summary>
-        /// Use this to make direct edits to the rich text box.
-        /// </summary>
-        public ref RichTextBox TextBox { get { return ref RichTextBox; } }
+        private Dictionary<string,KeyValuePair<string,TextStyle>> Styles { get; set; }
 
         public FancyTextBox()
         {
-            InitializeComponent();
+            this.KeyPress += KeyPressEvent;
+            this.KeyUp += KeyUpEvent;
         }
 
         public void AddStyle(int priority, string startsWith, string endsWith, FontStyle fontStyle = FontStyle.Regular)
         {
-            Styles.Add(startsWith,
+            Styles.Add(startsWith, new KeyValuePair<string, TextStyle> (endsWith,
                 new TextStyle
                 {
                     Priority = priority,
                     Color = Color.Black,
-                    FontStyle = fontStyle,
-                    EndsWith = endsWith
-                });
+                    FontStyle = fontStyle
+                }));
         }
 
         public void AddStyle(int priority, string startsWith, string endsWith, Color color, FontStyle fontStyle=FontStyle.Regular)
         {
-            Styles.Add(startsWith,
+            Styles.Add(startsWith, new KeyValuePair<string, TextStyle> (endsWith,
                 new TextStyle
                 {
                     Priority = priority,
                     Color = color,
-                    FontStyle = fontStyle,
-                    EndsWith = endsWith
-                });
+                    FontStyle = fontStyle
+                }));
             UpdateText();
         }
 
@@ -64,11 +58,11 @@ namespace TextBoxes
         /// <param name="startsWith"></param>
         /// <param name="style"></param>
         /// <returns>True if a style starts with string startsWith. False otherwise.</returns>
-        public bool ModifyStyle(string startsWith, TextStyle style)
+        public bool ModifyStyle(string startsWith, string endsWith, TextStyle style)
         {
             if (!Styles.ContainsKey(startsWith)) return false;
             
-            Styles[startsWith] = style; UpdateText(); return true;
+            Styles[startsWith] = new KeyValuePair<string, TextStyle>(endsWith, style); UpdateText(); return true;
         }
 
         /// <summary>
@@ -87,30 +81,75 @@ namespace TextBoxes
         /// </summary>
         private void UpdateText()
         {
-            string text = RichTextBox.Text;
-            Dictionary<int, int> startEnds = new Dictionary<int, int>();
-
-            // Need to figure out how to do this efficiently.
-            for (int j = 0; j < text.Length; j++)
-            {
-
-            }
-        }
-
-        private void RichTextBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            int i = 0, l = 0, s = RichTextBox.SelectionStart;
-            foreach (var key in Styles.Keys)
-            {
-                l = key.Length; i = s - l;
-                if (i > 0 && RichTextBox.Text.Substring(i,l) == key)
+            Dictionary<int, HashSet<string>> keyLengths = new Dictionary<int, HashSet<string>>();
+            // Organize dict keys by string length
+            foreach (var key in Styles.Keys) {
+                var l = key.Length;
+                if (keyLengths.ContainsKey(l))
                 {
-                    TextStyles.Add(Styles[key]);
+                    keyLengths[l].Add(key);
+                }
+                else
+                {
+                    keyLengths.Add(l, new HashSet<string> { key });
+                }
+            } 
+
+            // Need to account for Style Priority
+            for (int textPos = 0; textPos < Text.Length; textPos++)
+            {
+                foreach (var len in keyLengths.Keys)
+                {
+                    if (len < textPos) UpdateTextStyle(textPos, len, keyLengths);
                 }
             }
         }
 
-        private void RichTextBox_KeyUp(object sender, KeyEventArgs e)
+        private void UpdateTextStyle(int textPos, int len, Dictionary<int, HashSet<string>> keyLengths)
+        {
+            foreach (var str in keyLengths[len])
+            {
+                if (Text.Substring(0, len).EndsWith(str))
+                {
+                    // Style the text.
+                    StyleSelection(textPos - len, textPos, Styles[str].Value);
+                }
+            }
+
+            // Maintain the text formatting until the end string is reached.
+        }
+
+        private void KeyPressEvent(object sender, KeyPressEventArgs e)
+        {
+            int s = this.SelectionStart;
+
+            foreach (var key in Styles.Keys)
+            {
+                int l = key.Length;
+                int i = s - l;
+                if (i > 0 && this.Text.Substring(i,l) == key)
+                {
+                    // DO NOT REMOVE. Line added for readability.
+                    TextStyle style = Styles[key].Value;
+                    
+                    TextStyles.Add(style);
+                }
+            }
+        }
+
+        public void StyleSelection(int start, int end, TextStyle style)
+        {
+            int s = SelectionStart, l = SelectionLength;
+
+            Select(start, end - start);
+            SelectionColor = style.Color;
+            Font ft = SelectionFont;
+            SelectionFont = new Font(ft, style.FontStyle);
+
+            Select(s, l);
+        }
+
+        private void KeyUpEvent(object sender, KeyEventArgs e)
         {
 
         }
@@ -121,7 +160,6 @@ namespace TextBoxes
         public int Priority { get; set; }
         public Color Color { get; set; }
         public FontStyle FontStyle { get; set; }
-        public string EndsWith { get; set; }
 
         public static bool operator !=(TextStyle textStyle1, TextStyle textStyle2)
         {
@@ -133,7 +171,6 @@ namespace TextBoxes
             if (textStyle1.Priority != textStyle2.Priority) return false;
             if (textStyle1.Color != textStyle2.Color) return false;
             if (textStyle1.FontStyle != textStyle2.FontStyle) return false;
-            if (textStyle1.EndsWith != textStyle2.EndsWith) return false;
 
             return true;
         }
@@ -145,12 +182,12 @@ namespace TextBoxes
 
         public override int GetHashCode()
         {
-            return Color.ToArgb() + Priority + FontStyle.GetHashCode() + EndsWith.GetHashCode();
+            return Color.ToArgb() * Priority * FontStyle.GetHashCode();
         }
 
         public override string ToString()
         {
-            return $"{Priority}: {Color} {FontStyle} (Ends With: {EndsWith})";
+            return $"{Priority}: {Color} {FontStyle}";
         }
     }
 }
