@@ -42,12 +42,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TagTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TagTextBox.Designer.cs">
-      <DependentUpon>TagTextBox.cs</DependentUpon>
-    </Compile>
     <Compile Include="VividTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -58,9 +52,6 @@
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="TagTextBox.resx">
-      <DependentUpon>TagTextBox.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="VividTextBox.resx">
       <DependentUpon>VividTextBox.cs</DependentUpon>
     </EmbeddedResource>
