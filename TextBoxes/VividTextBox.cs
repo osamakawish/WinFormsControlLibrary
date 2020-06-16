@@ -10,8 +10,7 @@ using System.Windows.Forms;
 
 namespace TextBoxes
 {
-    // Need to add "HasStyle", "RemoveStyle", "StyleLastChar" and "SwapStyle" methods.
-    // Also need to fix current methods as applying font style bold will currently remove italics from text, for example.
+    // Need option to reset color and font for upcoming text. 
     /// <summary>
     /// A text box that allows direct control of the RichTextBox.
     /// </summary>
@@ -67,6 +66,13 @@ namespace TextBoxes
         public bool HasStyle(int start, int length, TextStyle textStyle)
             => HasStyle(start, length, new TextStyle { Color = SelectionColor, FontStyle = SelectionFont.Style }, textStyle);
 
+        /// <summary>
+        /// A convenient simplified definition for public HasStyle methods, containing reused code.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="selection"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
         private bool HasStyle<T>(T selection, T source)
         {
             int s = SelectionStart, l = SelectionLength;
@@ -282,40 +288,40 @@ namespace TextBoxes
         /// Applies the action to the character preceding the selection.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="func"></param>
+        /// <param name="action"></param>
         /// <param name="newValue"></param>
-        public void ApplyToLastChar<T>(Action<T> func, T newValue)
+        public void ApplyToLastChar<T>(Action<T> action, T newValue)
         {
             int s = SelectionStart, l = SelectionLength;
             if (s == 0) return;
-            Select(s-1, s); func(newValue); Select(s, l);
+            Select(s-1, s); action(newValue); Select(s, l);
         }
 
         /// <summary>
         /// Applies the action to the character following the selection.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="func"></param>
+        /// <param name="action"></param>
         /// <param name="newValue"></param>
-        public void ApplyToNextChar<T>(Action<T> func, T newValue)
+        public void ApplyToNextChar<T>(Action<T> action, T newValue)
         {
             int s = SelectionStart, l = SelectionLength;
             if (s + l == Text.Length) return;
-            Select(s + l, s + l + 1); func(newValue); Select(s, l);
+            Select(s + l, s + l + 1); action(newValue); Select(s, l);
         }
 
         /// <summary>
-        /// Applies the given function to the provided index range.
+        /// Applies the given actiontion to the provided index range.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="start"></param>
         /// <param name="length"></param>
-        /// <param name="func"></param>
+        /// <param name="action"></param>
         /// <param name="newValue"></param>
-        public void ApplyToSubstring<T>(int start, int length, Action<T> func, T newValue)
+        public void ApplyToSubstring<T>(int start, int length, Action<T> action, T newValue)
         {
             int s = SelectionStart, l = SelectionLength;
-            Select(start, length); func(newValue); Select(s, l);
+            Select(start, length); action(newValue); Select(s, l);
         }
     }
 
