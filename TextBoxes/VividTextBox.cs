@@ -246,19 +246,19 @@ namespace TextBoxes
         }
 
         /// <summary>
-        /// 
+        /// Removes the color of the selection and changes it to the the ForeColor value.
         /// </summary>
         /// <typeparam name="Color"></typeparam>
         public void RemoveStyle<Color>() => SelectionColor = ForeColor;
 
         /// <summary>
-        /// 
+        /// Removes the given font style of the selection.
         /// </summary>
         /// <param name="fontStyle"></param>
         public void RemoveStyle(FontStyle fontStyle) => SelectionFont = new Font(SelectionFont, SelectionFont.Style & ~fontStyle);
 
         /// <summary>
-        /// 
+        /// Removes the provided color and font style from the selection.
         /// </summary>
         /// <param name="textStyle"></param>
         public void RemoveStyle(TextStyle textStyle)
