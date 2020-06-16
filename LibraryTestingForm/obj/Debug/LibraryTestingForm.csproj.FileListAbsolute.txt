@@ -1,0 +1,13 @@
+C:\Users\osama\source\repos\WinFormsControlLibrary\LibraryTestingForm\bin\Debug\LibraryTestingForm.exe.config
+C:\Users\osama\source\repos\WinFormsControlLibrary\LibraryTestingForm\bin\Debug\LibraryTestingForm.exe
+C:\Users\osama\source\repos\WinFormsControlLibrary\LibraryTestingForm\bin\Debug\LibraryTestingForm.pdb
+C:\Users\osama\source\repos\WinFormsControlLibrary\LibraryTestingForm\bin\Debug\TextBoxes.dll
+C:\Users\osama\source\repos\WinFormsControlLibrary\LibraryTestingForm\bin\Debug\TextBoxes.pdb
+C:\Users\osama\source\repos\WinFormsControlLibrary\LibraryTestingForm\obj\Debug\LibraryTestingForm.csprojAssemblyReference.cache
+C:\Users\osama\source\repos\WinFormsControlLibrary\LibraryTestingForm\obj\Debug\LibraryTestingForm.Form.resources
+C:\Users\osama\source\repos\WinFormsControlLibrary\LibraryTestingForm\obj\Debug\LibraryTestingForm.Properties.Resources.resources
+C:\Users\osama\source\repos\WinFormsControlLibrary\LibraryTestingForm\obj\Debug\LibraryTestingForm.csproj.GenerateResource.cache
+C:\Users\osama\source\repos\WinFormsControlLibrary\LibraryTestingForm\obj\Debug\LibraryTestingForm.csproj.CoreCompileInputs.cache
+C:\Users\osama\source\repos\WinFormsControlLibrary\LibraryTestingForm\obj\Debug\LibraryTestingForm.csproj.CopyComplete
+C:\Users\osama\source\repos\WinFormsControlLibrary\LibraryTestingForm\obj\Debug\LibraryTestingForm.exe
+C:\Users\osama\source\repos\WinFormsControlLibrary\LibraryTestingForm\obj\Debug\LibraryTestingForm.pdb

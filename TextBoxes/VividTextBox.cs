@@ -10,11 +10,83 @@ using System.Windows.Forms;
 
 namespace TextBoxes
 {
+    // Need to add "HasStyle", "RemoveStyle", "StyleLastChar" and "SwapStyle" methods.
+    // Also need to fix current methods as applying font style bold will currently remove italics from text, for example.
     /// <summary>
     /// A text box that allows direct control of the RichTextBox.
     /// </summary>
     public partial class VividTextBox: RichTextBox
     {
+        // Want to change "HasStyle" signature to have another boolean argument to impact return values.
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="color"></param>
+        /// <returns>True if at least one of the characters has the given color applied. False otherwise.</returns>
+        public bool HasStyle(Color color) => HasStyle(SelectionColor, color);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fontStyle"></param>
+        /// <returns>True if any character in the selection contains the given font style. False otherwise.</returns>
+        public bool HasStyle(FontStyle fontStyle) => HasStyle(SelectionFont.Style, fontStyle);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="textStyle"></param>
+        /// <returns>True if any character in the selection contains the text style. False otherwise.</returns>
+        public bool HasStyle(TextStyle textStyle)
+            => HasStyle(new TextStyle { Color = SelectionColor, FontStyle = SelectionFont.Style }, textStyle);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <param name="color"></param>
+        /// <returns>True if any character in the selection contains the given color. False otherwise.</returns>
+        public bool HasStyle(int start, int length, Color color) => HasStyle(start, length, SelectionColor, color);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fontStyle"></param>
+        /// <returns>True if any character in the selection contains the given font style. False otherwise.</returns>
+        public bool HasStyle(int start, int length, FontStyle fontStyle) 
+            => HasStyle(start, length, SelectionFont.Style, fontStyle);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <param name="textStyle"></param>
+        /// <returns>True if any character in the selection contains the text style. False otherwise.</returns>
+        public bool HasStyle(int start, int length, TextStyle textStyle)
+            => HasStyle(start, length, new TextStyle { Color = SelectionColor, FontStyle = SelectionFont.Style }, textStyle);
+
+        private bool HasStyle<T>(T selection, T source)
+        {
+            int s = SelectionStart, l = SelectionLength;
+            for (int j = 0; j < l; j++)
+            {
+                Select(s + j, s + j + 1);
+                if (selection.Equals(source)) return true;
+            }
+            return false;
+        }
+
+        private bool HasStyle<T>(int start, int length, T selection, T source)
+        {
+            int s = SelectionStart, l = SelectionLength;
+            Select(start, length); bool hasStyle = HasStyle(selection, source);
+            Select(s, l);
+
+            return hasStyle;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -76,7 +148,7 @@ namespace TextBoxes
         public void ApplyStyle(FontStyle fontStyle)
         {
             Font font = SelectionFont;
-            SelectionFont = new Font(font, fontStyle);
+            SelectionFont = new Font(font, font.Style | fontStyle);
         }
 
         /// <summary>
@@ -160,44 +232,6 @@ namespace TextBoxes
         }
 
         /// <summary>
-        /// Colors the text in the provided index range.
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="length"></param>
-        /// <param name="color"></param>
-        public void StyleSelection(int start, int length, Color color)
-        {
-            int s = SelectionStart, l = SelectionLength;
-            Select(start, length); ApplyStyle(color);
-            Select(s, l);
-        }
-
-        /// <summary>
-        /// Applies the font style to the text in the provided index range.
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="length"></param>
-        /// <param name="fontStyle"></param>
-        public void StyleSelection(int start, int length, FontStyle fontStyle)
-        {
-            int s = SelectionStart, l = SelectionLength;
-            Select(start, length); ApplyStyle(fontStyle);
-            Select(s, l);
-        }
-
-        /// <summary>
-        /// Styles the characters within the given index range.
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <param name="style"></param>
-        public void StyleSelection(int start, int length, TextStyle style)
-        {
-            int s = SelectionStart, l = SelectionLength;
-            Select(start, length); ApplyStyle(style); Select(s, l);
-        }
-
-        /// <summary>
         /// Selects the whole word(s) containing the current selection.
         /// </summary>
         /// <remarks>A whole word is a consecutive set of letters and digits.</remarks>
@@ -210,17 +244,87 @@ namespace TextBoxes
                 SelectionLength++;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="Color"></typeparam>
+        public void RemoveStyle<Color>() => SelectionColor = ForeColor;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fontStyle"></param>
+        public void RemoveStyle(FontStyle fontStyle) => SelectionFont = new Font(SelectionFont, SelectionFont.Style & ~fontStyle);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="textStyle"></param>
+        public void RemoveStyle(TextStyle textStyle)
+        {
+            RemoveStyle<Color>(); RemoveStyle(textStyle.FontStyle);
+        }
+
+        /// <summary>
+        /// Swaps the font style from its current value.
+        /// </summary>
+        /// <param name="fontStyle"></param>
+        public void SwapStyle(FontStyle fontStyle) => SelectionFont = new Font(SelectionFont, SelectionFont.Style ^ fontStyle);
+
+        /// <summary>
+        /// Swaps the font style from its current value.
+        /// </summary>
+        /// <param name="textStyle"></param>
+        public void SwapStyle(TextStyle textStyle) => SelectionFont = new Font(SelectionFont, SelectionFont.Style ^ textStyle.FontStyle);
+
+        /// <summary>
+        /// Applies the action to the character preceding the selection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func"></param>
+        /// <param name="newValue"></param>
+        public void ApplyToLastChar<T>(Action<T> func, T newValue)
+        {
+            int s = SelectionStart, l = SelectionLength;
+            if (s == 0) return;
+            Select(s-1, s); func(newValue); Select(s, l);
+        }
+
+        /// <summary>
+        /// Applies the action to the character following the selection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func"></param>
+        /// <param name="newValue"></param>
+        public void ApplyToNextChar<T>(Action<T> func, T newValue)
+        {
+            int s = SelectionStart, l = SelectionLength;
+            if (s + l == Text.Length) return;
+            Select(s + l, s + l + 1); func(newValue); Select(s, l);
+        }
+
+        /// <summary>
+        /// Applies the given function to the provided index range.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <param name="func"></param>
+        /// <param name="newValue"></param>
+        public void ApplyToSubstring<T>(int start, int length, Action<T> func, T newValue)
+        {
+            int s = SelectionStart, l = SelectionLength;
+            Select(start, length); func(newValue); Select(s, l);
+        }
     }
 
-    public class TextStyle
+    public class TextStyle : IEquatable<TextStyle>
     {
         public Color Color { get; set; }
         public FontStyle FontStyle { get; set; }
 
-        public static bool operator !=(TextStyle textStyle1, TextStyle textStyle2)
-        {
-            return !(textStyle1 == textStyle2);
-        }
+        public static bool operator !=(TextStyle textStyle1, TextStyle textStyle2) => !(textStyle1 == textStyle2);
 
         public static bool operator ==(TextStyle textStyle1, TextStyle textStyle2)
         {
@@ -230,19 +334,12 @@ namespace TextBoxes
             return true;
         }
 
-        public override bool Equals(object obj)
-        {
-            return this == (TextStyle)obj;
-        }
+        public override bool Equals(object obj) => this == (TextStyle)obj;
 
-        public override int GetHashCode()
-        {
-            return Color.ToArgb() * FontStyle.GetHashCode();
-        }
+        public override int GetHashCode() => Color.ToArgb() * FontStyle.GetHashCode();
 
-        public override string ToString()
-        {
-            return $"TextStyle({Color}, {FontStyle})";
-        }
+        public override string ToString() => $"TextStyle({Color}, {FontStyle})";
+
+        public bool Equals(TextStyle other) => this == other;
     }
 }
