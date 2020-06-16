@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace TextBoxes
 {
@@ -16,6 +17,7 @@ namespace TextBoxes
     public partial class VividTextBox: RichTextBox
     {
         // May want to add documentation with examples and param infos for object explorer.
+        // Also should add regex support for applying styles.
         /// <summary>
         /// 
         /// </summary>
@@ -357,6 +359,73 @@ namespace TextBoxes
         {
             int s = SelectionStart, l = SelectionLength;
             Select(start, length); action(newValue,selectionOnly); Select(s, l);
+        }
+
+        /// <summary>
+        /// Applies the action to the match.
+        /// </summary>
+        /// <remarks>This method will not test to see if the match apply to the text.</remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="match"></param>
+        /// <param name="action"></param>
+        /// <param name="newValue"></param>
+        /// <param name="selectionOnly"></param>
+        public void ApplyToMatch<T>(Match match, Action<T, bool> action, T newValue, bool selectionOnly = false) 
+            => ApplyToSubstring(match.Index, match.Length, action, newValue, selectionOnly);
+
+        /// <summary>
+        /// Applies the action to the first match.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="pattern"></param>
+        /// <param name="action"></param>
+        /// <param name="newValue"></param>
+        /// <param name="selectionOnly"></param>
+        /// <returns>The first match that matches the pattern.</returns>
+        public Match ApplyToMatch<T>(string pattern, Action<T, bool> action, T newValue, bool selectionOnly = false)
+        {
+            Match match = Regex.Match(Text, pattern);
+            ApplyToSubstring(match.Index, match.Length, action, newValue, selectionOnly);
+            return match;
+        }
+
+        /// <summary>
+        /// Applies the action to all the matches in the list.
+        /// </summary>
+        /// <remarks>This method will not test to see if the matches apply to the text.</remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="matches"></param>
+        /// <param name="action"></param>
+        /// <param name="newValue"></param>
+        /// <param name="selectionOnly"></param>
+        public void ApplyToMatches<T>(MatchCollection matches, Action<T, bool> action, T newValue, bool selectionOnly = false)
+        {
+            int s = SelectionStart, l = SelectionLength;
+
+            for (int i = 0; i < matches.Count; i++)
+            {
+                Match match = matches[i];
+                Select(match.Index, match.Length);
+                action(newValue, selectionOnly);
+            }
+
+            Select(s, l);
+        }
+
+        /// <summary>
+        /// Applies the action to all matches with the given pattern.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="pattern"></param>
+        /// <param name="action"></param>
+        /// <param name="newValue"></param>
+        /// <param name="selectionOnly"></param>
+        /// <returns>The collection of matches representing the pattern.</returns>
+        public MatchCollection ApplyToMatches<T>(string pattern, Action<T, bool> action, T newValue, bool selectionOnly = false)
+        {
+            MatchCollection matches = Regex.Matches(Text, pattern);
+            ApplyToMatches(matches, action, newValue, selectionOnly);
+            return matches;
         }
     }
 
