@@ -20,7 +20,14 @@ namespace LibraryTestingForm
 
         private void BoldButton_Click(object sender, EventArgs e)
         {
-            VividTextBox.ApplyStyle(FontStyle.Bold);
+            VividTextBox.Focus();
+            VividTextBox.SwapStyle(FontStyle.Bold);
+        }
+
+        private void ItalicsButton_Click(object sender, EventArgs e)
+        {
+            VividTextBox.Focus();
+            VividTextBox.SwapStyle(FontStyle.Italic);
         }
     }
 }

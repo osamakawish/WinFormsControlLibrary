@@ -10,13 +10,12 @@ using System.Windows.Forms;
 
 namespace TextBoxes
 {
-    // Need option to reset color and font for upcoming text. 
     /// <summary>
     /// A text box that allows direct control of the RichTextBox.
     /// </summary>
     public partial class VividTextBox: RichTextBox
     {
-        // Want to change "HasStyle" signature to have another boolean argument to impact return values.
+        // May want to add documentation with examples and param infos for object explorer.
         /// <summary>
         /// 
         /// </summary>
@@ -94,6 +93,34 @@ namespace TextBoxes
         }
 
         /// <summary>
+        /// Ensures that the text at the end of a styling returns to default rather than continuing to style additional new text.
+        /// </summary>
+        /// <param name="end"></param>
+        private void SelectionOnly(bool selectionOnly) 
+        { 
+            if (selectionOnly) ClearStyles(SelectionStart + SelectionLength, 0); 
+        }
+
+        /// <summary>
+        /// Removes all styles for the selected text.
+        /// </summary>
+        public void ClearStyles()
+        {
+            SelectionColor = ForeColor; SelectionFont = new Font(SelectionFont, FontStyle.Regular);
+        }
+
+        /// <summary>
+        /// Removes all styles from the text in the provided index range.
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        public void ClearStyles(int start, int end)
+        {
+            int s = SelectionStart, l = SelectionLength;
+            Select(start, end); ClearStyles(); Select(s, l);
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="fontStyle"></param>
@@ -137,13 +164,15 @@ namespace TextBoxes
         }
 
         /// <summary>
-        /// Applies the color to the current selection.
+        /// Applies the color to the current selection. Set selectionOnly to true if the style should not be applied to oncoming new text.
         /// </summary>
         /// <remarks>This is more efficient than defining a text style and applying it as it applies the color directly.</remarks>
         /// <param name="color"></param>
-        public void ApplyStyle(Color color)
+        /// <param name="selectionOnly"></param>
+        public void ApplyStyle(Color color, bool selectionOnly = false)
         {
             SelectionColor = color;
+            SelectionOnly(selectionOnly);
         }
 
         /// <summary>
@@ -151,10 +180,12 @@ namespace TextBoxes
         /// </summary>
         /// <remarks>This is slightly more efficient than defining a text style and applying it, as it applies the font style directly.</remarks>
         /// <param name="fontStyle"></param>
-        public void ApplyStyle(FontStyle fontStyle)
+        /// <param name="selectionOnly"></param>
+        public void ApplyStyle(FontStyle fontStyle, bool selectionOnly = false)
         {
             Font font = SelectionFont;
             SelectionFont = new Font(font, font.Style | fontStyle);
+            SelectionOnly(selectionOnly);
         }
 
         /// <summary>
@@ -163,29 +194,31 @@ namespace TextBoxes
         /// <remarks>This does not create a new text style.</remarks>
         /// <param name="color"></param>
         /// <param name="fontStyle"></param>
-        public void ApplyStyle(Color color, FontStyle fontStyle)
+        /// <param name="selectionOnly"></param>
+        public void ApplyStyle(Color color, FontStyle fontStyle, bool selectionOnly = false)
         {
             SelectionColor = color;
             Font ft = SelectionFont;
             SelectionFont = new Font(ft, fontStyle);
+            SelectionOnly(selectionOnly);
         }
 
         /// <summary>
         /// Styles the characters in the selection with the given style.
         /// </summary>
         /// <param name="style"></param>
-        public void ApplyStyle(TextStyle style)
+        public void ApplyStyle(TextStyle style, bool selectionOnly = false)
         {
             SelectionColor = style.Color; 
-            Font ft = SelectionFont;
-            SelectionFont = new Font(ft, style.FontStyle);
+            SelectionFont = new Font(SelectionFont, style.FontStyle);
+            SelectionOnly(selectionOnly);
         }
 
         /// <summary>
         /// Applies the given color to the selected text. 
         /// </summary>
         /// <remarks>If selection length is 0, then the whole word containing the caret position is colored.</remarks>
-        public void StyleSelection(Color color)
+        public void StyleSelection(Color color, bool selectionOnly = false)
         {
             if (SelectionLength > 0)
             {
@@ -255,34 +288,33 @@ namespace TextBoxes
         /// Removes the color of the selection and changes it to the the ForeColor value.
         /// </summary>
         /// <typeparam name="Color"></typeparam>
-        public void RemoveStyle<Color>() => SelectionColor = ForeColor;
+        public void RemoveStyle<Color>() => ApplyStyle(ForeColor);
 
         /// <summary>
         /// Removes the given font style of the selection.
         /// </summary>
         /// <param name="fontStyle"></param>
-        public void RemoveStyle(FontStyle fontStyle) => SelectionFont = new Font(SelectionFont, SelectionFont.Style & ~fontStyle);
+        public void RemoveStyle(FontStyle fontStyle) => ApplyStyle(SelectionFont.Style & ~fontStyle);
 
         /// <summary>
         /// Removes the provided color and font style from the selection.
         /// </summary>
         /// <param name="textStyle"></param>
-        public void RemoveStyle(TextStyle textStyle)
-        {
-            RemoveStyle<Color>(); RemoveStyle(textStyle.FontStyle);
-        }
+        public void RemoveStyle(TextStyle textStyle) => ApplyStyle(ForeColor, SelectionFont.Style & ~textStyle.FontStyle);
 
         /// <summary>
         /// Swaps the font style from its current value.
         /// </summary>
         /// <param name="fontStyle"></param>
-        public void SwapStyle(FontStyle fontStyle) => SelectionFont = new Font(SelectionFont, SelectionFont.Style ^ fontStyle);
+        /// <param name="selectionOnly"></param>
+        public void SwapStyle(FontStyle fontStyle, bool selectionOnly=false) => ApplyStyle(SelectionFont.Style ^ fontStyle, selectionOnly);
 
         /// <summary>
         /// Swaps the font style from its current value.
         /// </summary>
         /// <param name="textStyle"></param>
-        public void SwapStyle(TextStyle textStyle) => SelectionFont = new Font(SelectionFont, SelectionFont.Style ^ textStyle.FontStyle);
+        /// <param name="selectionOnly"></param>
+        public void SwapStyle(TextStyle textStyle, bool selectionOnly = false) => ApplyStyle(SelectionFont.Style ^ textStyle.FontStyle, selectionOnly);
 
         /// <summary>
         /// Applies the action to the character preceding the selection.
@@ -290,11 +322,12 @@ namespace TextBoxes
         /// <typeparam name="T"></typeparam>
         /// <param name="action"></param>
         /// <param name="newValue"></param>
-        public void ApplyToLastChar<T>(Action<T> action, T newValue)
+        /// <param name="selectionOnly"></param>
+        public void ApplyToLastChar<T>(Action<T,bool> action, T newValue, bool selectionOnly = false)
         {
             int s = SelectionStart, l = SelectionLength;
             if (s == 0) return;
-            Select(s-1, s); action(newValue); Select(s, l);
+            Select(s-1, s); action(newValue,selectionOnly); Select(s, l);
         }
 
         /// <summary>
@@ -303,11 +336,12 @@ namespace TextBoxes
         /// <typeparam name="T"></typeparam>
         /// <param name="action"></param>
         /// <param name="newValue"></param>
-        public void ApplyToNextChar<T>(Action<T> action, T newValue)
+        /// <param name="selectionOnly"></param>
+        public void ApplyToNextChar<T>(Action<T, bool> action, T newValue, bool selectionOnly = false)
         {
             int s = SelectionStart, l = SelectionLength;
             if (s + l == Text.Length) return;
-            Select(s + l, s + l + 1); action(newValue); Select(s, l);
+            Select(s + l, s + l + 1); action(newValue,selectionOnly); Select(s, l);
         }
 
         /// <summary>
@@ -318,10 +352,11 @@ namespace TextBoxes
         /// <param name="length"></param>
         /// <param name="action"></param>
         /// <param name="newValue"></param>
-        public void ApplyToSubstring<T>(int start, int length, Action<T> action, T newValue)
+        /// <param name="selectionOnly"></param>
+        public void ApplyToSubstring<T>(int start, int length, Action<T, bool> action, T newValue, bool selectionOnly = false)
         {
             int s = SelectionStart, l = SelectionLength;
-            Select(start, length); action(newValue); Select(s, l);
+            Select(start, length); action(newValue,selectionOnly); Select(s, l);
         }
     }
 
