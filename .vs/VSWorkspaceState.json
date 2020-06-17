@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\TextBoxes\\bin\\Debug"
+    "\\LibraryTestingForm",
+    "\\TextBoxes"
   ],
-  "SelectedNode": "\\TextBoxes",
+  "SelectedNode": "\\LibraryTestingForm\\Form.Designer.cs",
   "PreviewInSolutionExplorer": false
 }

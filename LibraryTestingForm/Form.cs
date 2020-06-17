@@ -35,6 +35,8 @@ namespace LibraryTestingForm
                 "To the scythe of the Grim Reaper we eventually must fall.\n";
 
             TestVividTextBox();
+
+            
         }
 
         private void TestVividTextBox()
