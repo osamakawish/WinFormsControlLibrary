@@ -1,8 +1,8 @@
 C:\Users\osama\source\repos\WinFormsControlLibrary\TextBoxes\bin\Debug\TextBoxes.dll
 C:\Users\osama\source\repos\WinFormsControlLibrary\TextBoxes\bin\Debug\TextBoxes.pdb
-C:\Users\osama\source\repos\WinFormsControlLibrary\TextBoxes\obj\Debug\VividTextBox.csprojAssemblyReference.cache
 C:\Users\osama\source\repos\WinFormsControlLibrary\TextBoxes\obj\Debug\TextBoxes.VividTextBox.resources
 C:\Users\osama\source\repos\WinFormsControlLibrary\TextBoxes\obj\Debug\VividTextBox.csproj.GenerateResource.cache
 C:\Users\osama\source\repos\WinFormsControlLibrary\TextBoxes\obj\Debug\VividTextBox.csproj.CoreCompileInputs.cache
 C:\Users\osama\source\repos\WinFormsControlLibrary\TextBoxes\obj\Debug\TextBoxes.dll
 C:\Users\osama\source\repos\WinFormsControlLibrary\TextBoxes\obj\Debug\TextBoxes.pdb
+C:\Users\osama\source\repos\WinFormsControlLibrary\TextBoxes\obj\Debug\VividTextBox.csprojAssemblyReference.cache

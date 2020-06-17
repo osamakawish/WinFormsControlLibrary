@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 
@@ -16,8 +10,12 @@ namespace TextBoxes
     /// </summary>
     public partial class VividTextBox: RichTextBox
     {
-        // May want to add documentation with examples and param infos for object explorer.
-        // Also should add regex support for applying styles.
+        public VividTextBox ()
+	    {
+            DetectUrls = true;
+            LinkClicked += (s, e) => System.Diagnostics.Process.Start(e.LinkText);
+        }
+
         /// <summary>
         /// 
         /// </summary>
