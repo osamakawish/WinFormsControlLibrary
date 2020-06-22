@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VividTextBox", "TextBoxes\VividTextBox.csproj", "{BEE7B28A-B7C4-4160-A993-2D127CCE37B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryTestingForm", "LibraryTestingForm\LibraryTestingForm.csproj", "{3A129F62-6357-441B-9F10-7FAE9E705543}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_LibraryTestingForm", "LibraryTestingForm\_LibraryTestingForm.csproj", "{3A129F62-6357-441B-9F10-7FAE9E705543}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

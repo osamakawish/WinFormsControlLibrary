@@ -2,8 +2,10 @@
   "ExpandedNodes": [
     "",
     "\\LibraryTestingForm",
-    "\\TextBoxes"
+    "\\TextBoxes",
+    "\\TextBoxes\\bin",
+    "\\TextBoxes\\bin\\Debug"
   ],
-  "SelectedNode": "\\LibraryTestingForm\\Form.Designer.cs",
+  "SelectedNode": "\\TextBoxes\\VividTextBox.cs",
   "PreviewInSolutionExplorer": false
 }
